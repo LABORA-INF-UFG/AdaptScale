@@ -1,0 +1,28 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: pgbouncer-scaledobject
+  namespace: hcce
+spec:
+  scaleTargetRef:
+    name: pgbouncer
+  minReplicaCount: 1
+  maxReplicaCount: 3
+  cooldownPeriod: 120
+  pollingInterval: 30
+  triggers:
+    # Gatilho de Requisições por Segundo
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: rate_k6_http_reqs_total
+      query: rate(k6_http_reqs_total[1m])
+      threshold: "135" 
+      
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: pgbouncer-t_cpu_usage_seconds_total
+      query: "sum(rate(container_cpu_usage_seconds_total{namespace='hcce',pod=~'pgbouncer-t.*'}[5m])) * 100 / count(node_cpu_seconds_total{mode='idle'})"
+      threshold: "2"
+

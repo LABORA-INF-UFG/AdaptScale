@@ -1,0 +1,29 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: photomnemonic-scaledobject
+  namespace: hcce
+spec:
+  scaleTargetRef:
+    name: photomnemonic
+  minReplicaCount: 1
+  maxReplicaCount: 3
+  cooldownPeriod: 120
+  pollingInterval: 30
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: photomnemonic_network_bytes_total
+      query: |
+        sum(rate(container_network_transmit_bytes_total{namespace="hcce", pod=~"photomnemonic-.*"}[5m])) + sum(rate(container_network_receive_bytes_total{namespace="hcce", pod=~"photomnemonic-.*"}[5m]))
+      threshold: "135" 
+      
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: photomnemonic_cpu_usage_seconds_total
+      query: "sum(rate(container_cpu_usage_seconds_total{namespace='hcce',pod=~'photomnemonic.*'}[5m])) * 100 / count(node_cpu_seconds_total{mode='idle'})"
+      threshold: "0.0004" 
+
+

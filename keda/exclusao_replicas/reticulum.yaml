@@ -1,0 +1,31 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: reticulum-scaledobject
+  namespace: hcce
+spec:
+  scaleTargetRef:
+    name: reticulum
+  minReplicaCount: 1
+  maxReplicaCount: 1
+  cooldownPeriod: 60
+  pollingInterval: 30
+  triggers:
+
+    # Gatilho de Requisições por Segundo
+    - type: prometheus
+      metadata:
+        serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+        metricName: rate_k6_http_reqs_total
+        query: rate(k6_http_reqs_total[1m])
+        threshold: "200" 
+
+    # Gatilho de CPU
+    - type: prometheus
+      metadata:
+        serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+        metricName: reticulum_cpu_usage_seconds_total
+        query: "sum(rate(container_cpu_usage_seconds_total{namespace='hcce',pod=~'reticulum.*'}[5m])) * 100 / count(node_cpu_seconds_total{mode='idle'})"
+        threshold: "60" 
+
+

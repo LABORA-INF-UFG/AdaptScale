@@ -1,0 +1,11 @@
+O processo de captura dos dados ocorre da seguinte forma:
+
+-Primeiramente executa-se o script python '1_extrair_metricas.py';
+-Os arquivos extraídos são salvos na pasta 'metricas_capturadas';
+-Em seguida, executa-se o script python '2_sincronizar_metricas.py';
+-Esta ação sincroniza os registros e consolida as métricas capturadas em um arquivo unificado;
+-Manualmente substituimos a primeira linha do arquivo gerado pela linha que consta no arquivo '3_renomeia_colunas.txt'
+
+Esse processo deve ser realizado para cada experiemtno, nas pastas:
+../experimento/hardware
+../experimento/eventos_hardware

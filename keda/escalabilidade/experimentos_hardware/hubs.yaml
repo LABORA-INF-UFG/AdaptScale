@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: hubs
+  namespace: hcce
+spec:
+  scaleTargetRef:
+    name: hubs
+  minReplicaCount: 1
+  maxReplicaCount: 3
+  cooldownPeriod: 120
+  pollingInterval: 30
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: hubs_network_bytes_total
+      query: |
+        sum(rate(container_network_transmit_bytes_total{namespace="hcce", pod=~"hubs-.*"}[5m])) + sum(rate(container_network_receive_bytes_total{namespace="hcce", pod=~"hubs-.*"}[5m]))
+      threshold: "1700"

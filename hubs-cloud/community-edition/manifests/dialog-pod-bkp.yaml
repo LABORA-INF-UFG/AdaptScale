@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2024-10-11T19:23:11Z"
+  generateName: dialog-5fc67d7666-
+  labels:
+    app: dialog
+    pod-template-hash: 5fc67d7666
+  name: dialog-5fc67d7666-tf2pj
+  namespace: hcce
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: dialog-5fc67d7666
+    uid: cad5e572-f4db-401f-a332-278cb62032d8
+  resourceVersion: "12834227"
+  uid: 50a8b52f-8acb-4030-a2d8-402b59c9802c
+spec:
+  containers:
+  - env:
+    - name: perms_key
+      valueFrom:
+        secretKeyRef:
+          key: PERMS_KEY
+          name: configs
+    image: mozillareality/dialog:stable-latest
+    imagePullPolicy: Always
+    name: dialog
+    ports:
+    - containerPort: 4443
+      hostPort: 4443
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-hvm2w
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  nodeName: virtualhubs2-wpncz
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-hvm2w
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-10-11T19:35:58Z"
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2024-10-11T19:33:56Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-10-11T19:35:58Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-10-11T19:35:58Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-10-11T19:33:56Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://0e52138b204aef4c1bdf069c69d5e3b07a2d05b0a4b99067e722401918c76fa3
+    image: docker.io/mozillareality/dialog:stable-latest
+    imageID: docker.io/mozillareality/dialog@sha256:92aed6774f8d3c71a3d812b27bdbb64a72cacfc67c2bc48543e10b91744c249b
+    lastState: {}
+    name: dialog
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-10-11T19:35:57Z"
+  hostIP: 10.116.0.2
+  hostIPs:
+  - ip: 10.116.0.2
+  phase: Running
+  podIP: 10.116.0.2
+  podIPs:
+  - ip: 10.116.0.2
+  qosClass: BestEffort
+  startTime: "2024-10-11T19:33:56Z"

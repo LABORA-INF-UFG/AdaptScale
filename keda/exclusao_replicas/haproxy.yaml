@@ -1,0 +1,29 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: haproxy-scaledobject
+  namespace: hcce
+spec:
+  scaleTargetRef:
+    name: haproxy
+  minReplicaCount: 1
+  maxReplicaCount: 1
+  cooldownPeriod: 120
+  pollingInterval: 30
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: haproxy_network_bytes_total
+      query: |
+        sum(rate(container_network_transmit_bytes_total{namespace="hcce", pod=~"haproxy-.*"}[5m])) + sum(rate(container_network_receive_bytes_total{namespace="hcce", pod=~"haproxy-.*"}[5m]))
+      threshold: "1000000" # 1 MB/s
+
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: haproxy_cpu_usage_seconds_total
+      query: "sum(rate(container_cpu_usage_seconds_total{namespace='hcce',pod=~'haproxy.*'}[5m])) * 100 / count(node_cpu_seconds_total{mode='idle'})"
+      threshold: "20"      
+
+

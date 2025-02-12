@@ -1,0 +1,22 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: pgsql-scaledobject
+  namespace: hcce
+spec:
+  scaleTargetRef:
+    name: pgsql
+  minReplicaCount: 1
+  maxReplicaCount: 3
+  cooldownPeriod: 120
+  pollingInterval: 30
+  triggers:
+    # Gatilho de Requisições por Segundo
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoramento.svc.cluster.local
+      metricName: rate_k6_http_reqs_total
+      query: rate(k6_http_reqs_total[1m])
+      threshold: "135" 
+
+

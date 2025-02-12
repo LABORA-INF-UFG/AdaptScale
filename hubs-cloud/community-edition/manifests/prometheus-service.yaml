@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-server
+  namespace: monitoramento
+spec:
+  ports:
+    - name: http
+      port: 9090      # Porta externa
+      targetPort: 9090 # Porta interna do container
+  selector:
+    app: prometheus
+  type: ClusterIP
+

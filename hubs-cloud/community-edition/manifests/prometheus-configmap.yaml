@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server
+  namespace: monitoramento
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s # Como e quando coletar as métricas
+      evaluation_interval: 15s # Intervalo de avaliação de regras de alerta
+
+    scrape_configs:
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - action: keep
+            regex: default/kubernetes
+            source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name]
+
+      - job_name: 'kubernetes-nodes'
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_(.+)
+          - action: replace
+            replacement: "$1"
+            source_labels: [__meta_kubernetes_node_name]
+            target_label: node
+
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - action: replace
+            replacement: "$1"
+            source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+
